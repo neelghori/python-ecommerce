@@ -1,0 +1,182 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+    <main class="container">
+    
+        <!-- Left Column / Headphones Image -->
+        <div class="left-column">
+            {% for variant in variants %}
+                <img
+                {% if forloop.first %}
+                    class="active"
+                {% endif %}
+                src="{{ variant.image.url }}"
+                data-label-id="{{ variant.id }}"
+                alt="Variant Image">
+            {% endfor %}
+        </div>
+    
+    
+        <!-- Right Column -->
+        <div class="right-column">
+    
+        <!-- Product Description -->
+        <div class="product-description">
+            <span>Handle</span>
+            <h1>{{ product.name }}</h1>
+        </div>
+    
+        <!-- Product Configuration -->
+        <div class="product-configuration">
+    
+            <!-- Product Color -->
+            <div class="product-color">
+                <span>Color Options</span>
+        
+                <div class="color-choose margin-top-5">
+                    {% for variant in variants %}
+                        <div
+                        {% if forloop.first %}
+                            class="diagonal-square active"
+                        {% else %}
+                            class="diagonal-square"
+                        {% endif %}
+                        style="background-image: linear-gradient(135deg, {{ variant.color_finish_up.hex_code }} 50%, {{ variant.color_finish_down.hex_code }} 50%);" 
+                        title="Finish-Up-Color: {{ variant.color_finish_up }} | Finish-Down-Color: {{ variant.color_finish_down }}"
+                        ></div>
+                    {% endfor %}
+                </div>
+            </div>
+    
+            <!-- Size Configuration -->
+            <div class="size-config">
+            <span>Sizes</span>
+    
+            <div class="size-choose margin-top-5">
+                {% for size in sizes %}
+                    {% if forloop.first %}
+                        <button class="active">{{ size }} mm</button>
+                    {% else %}
+                        <button>{{ size }} mm</button>
+                    {% endif %}
+                {% endfor %}
+            </div>
+    
+            <a href="#">How to measure the handle</a>
+            </div>
+        </div>
+    
+        <!-- Product Pricing -->
+        <div class="product-price">
+            <span>&#8377; {{ variants.0.price_retailer }}</span>
+            <a href="{% url 'add-to-cart' %}" class="cart-btn" data-label-id="{{ variants.0.id }}">Add to cart</a>
+        </div>
+        </div>
+    </main>
+
+    <script>
+        const productColors = document.querySelectorAll(".diagonal-square");
+        const productImages = document.querySelectorAll(".left-column img");
+
+        productColors.forEach((color, index) => {
+            color.addEventListener("click", () => {
+                productImages.forEach((image) => {
+                    image.classList.remove("active");
+                });
+                productImages[index].classList.add("active");
+
+                productColors.forEach((c) => {
+                    c.classList.remove("active");
+                });
+                color.classList.add("active");
+
+                fetch("{% url 'get-price' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    body: JSON.stringify(
+                        {
+                            var_id: productImages[index].getAttribute("data-label-id"),
+                            size: document.querySelector(".size-choose button.active").textContent,
+                        })
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.exists) {
+                        document.querySelector(".product-price span").textContent = `₹ ${data.price}`;
+                        document.querySelector(".cart-btn").setAttribute("data-label-id", {{ data.var_id }});
+                    }
+                    else {
+                        // Get the size button which is active and remove the active class from it
+                        const activeSize = document.querySelector(".size-choose button.active");
+                        activeSize.classList.remove("active");
+                        activeSize.blur();
+
+                        // data.existing_size will tell the size which exists for the variant and we can set the active class to that size button
+                        document.querySelectorAll(".size-choose button").forEach((size) => {
+                            if (size.textContent === data.existing_size) {
+                                size.classList.add("active");
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    
+        const productSizes = document.querySelectorAll(".size-choose button");
+        productSizes.forEach((size) => {
+            size.addEventListener("click", () => {
+                productSizes.forEach((s) => {
+                    s.classList.remove("active");
+                });
+                // size.classList.add("active");
+
+                console.log("Size: ", size.textContent)
+
+                fetch("{% url 'get-price' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    body: JSON.stringify(
+                        {
+                            var_id: document.querySelector(".left-column img.active").getAttribute("data-label-id"),
+                            size: size.textContent,
+                        })
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    // data.exists will tell whether the variant exists or not
+                    // If it does, then update the price and set the data-label-id of the add-to-cart button
+                    if (data.exists) {
+                        size.classList.add("active");
+                        document.querySelector(".product-price span").textContent = `₹ ${data.price}`;
+                        document.querySelector(".cart-btn").setAttribute("data-label-id", document.querySelector(".left-column img.active").getAttribute("data-label-id"));
+                    }
+                    else {
+                        // If the variant does not exist, then remove the active class from the size button and also the focus from the size button
+                        size.classList.remove("active");
+                        size.blur();
+                    }
+                });
+            });
+        });
+
+        const addToCartButton = document.querySelector(".cart-btn");
+        addToCartButton.addEventListener("click", () => {
+            fetch("{% url 'add-to-cart' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                body: JSON.stringify({ var_id: addToCartButton.getAttribute("data-label-id") })
+            });
+        });
+    </script>
+{% endblock content %}

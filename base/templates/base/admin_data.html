@@ -1,0 +1,474 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block admin_data %}
+    selected
+{% endblock admin_data %}
+
+{% block content %}
+{% comment %} Dashboard {% endcomment %}
+<div class="content height-70" style="padding-top: 5px;">
+    <div class="heading">
+        <h1>My <span class="primary">Dashboard</span></h1>
+    </div>
+    
+    <div class="flex-row-between width-100 height-90pr">
+        {% comment %} Applications per Month {% endcomment %}
+        <div class="feature-unit height-90pr" style="width: 68%;">
+            <h2 class="margin-0 light-dark" style="text-align: center;">Orders per Month (Current FYI)</h2>
+            <div class="margin-top-10 height-90pr">
+                <canvas id="bars">
+                </canvas>
+            </div>
+        </div>
+
+        {% comment %} Candidate Lifecycle {% endcomment %}
+        <div class="feature-unit height-90pr" style="width: 24%;">
+            <h2 class="margin-0 light-dark" style="text-align: center;">Order Stats</h2>
+            <div class="margin-top-10 height-90pr">
+                <canvas id="pie">
+                </canvas>
+            </div>
+        </div>
+	</div>
+</div>
+
+<div class="content height-70" style="padding-top: 5px;">
+    <div class="heading">
+        <h1>Top <span class="primary">Performers</span></h1>
+    </div>
+    
+    <div class="flex-row-between width-100 height-90pr">
+        <!-- Retailer Analytics -->
+        {% comment %} Top 5 Retailer Handles (By Quantity) {% endcomment %}
+        <div class="feature-unit" style="width: 28%; height: 80%">
+            <h2 class="margin-0 light-dark" style="text-align: center;">Top 5 Retailer Handles (By Quantity)</h2>
+            <div class="margin-top-10" style="height: 85%">
+                <canvas id="top_5_ret_quant">
+                </canvas>
+            </div>
+        </div>
+
+        {% comment %} Top 5 Retailer Handles (By Revenue) {% endcomment %}
+        <div class="feature-unit" style="width: 28%; height: 80%">
+            <h2 class="margin-0 light-dark" style="text-align: center;">Top 5 Retailer Handles (By Revenue)</h2>
+            <div class="margin-top-10" style="height: 85%">
+                <canvas id="top_5_ret_rev">
+                </canvas>
+            </div>
+        </div>
+
+        {% comment %} Retailer Order stats {% endcomment %}
+        <div class="feature-unit" style="width: 28%; height: 80%">
+            <h2 class="margin-0 light-dark" style="text-align: center;">Retailer Order Stats</h2>
+            <div class="margin-top-10" style="height: 85%">
+                <canvas id="retailer_order_stats">
+                </canvas>
+            </div>
+        </div>
+	</div>
+</div>
+
+{% comment %} Orders {% endcomment %}
+<div class="content height-80" style="padding-top: 5px;">
+    <div class="heading">
+        <h1>All <span class="primary">Bills</span></h1>
+    </div>
+    
+    {% comment %} <div class="table" style="height: 550px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Size (mm)</th>
+                    <th>Color</th>
+                    <th>Quantity</th>
+                    <th>Order Date</th>
+                    <th>Delivery Date</th>
+                    <th>Status</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.bill_id|truncatechars:8 }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>{{ order.variant.product.code }}</td>
+                    <td>{{ order.variant.size_mm }}</td>
+                    <td class="cart-item-color" title="{{ order.variant.color_finish_up }} | {{ order.variant.color_finish_down }}">
+                        <div class="table-hex-display" style="background-image: linear-gradient(135deg, {{ order.variant.color_finish_up.hex_code }} 50%, {{ order.variant.color_finish_down.hex_code }} 50%); border-radius: 9px;">
+                        </div>
+                    </td>
+                    <td>{{ order.quantity }}</td>
+                    <td>{{ order.order_date }}</td>
+                    <td>{{ order.delivery_date }}</td>
+                    <td>{{ order.status|capfirst }}</td>
+                    <td class="padding-0">
+                        <div class="function-btn">
+                            <a href="">
+                                <img src="{% static 'icons/delete.png' %}" alt="">
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div> {% endcomment %}
+
+    {% comment %} Bill Table {% endcomment %}
+    <div class="table" style="height: 550px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Discount</th>
+                    <th>Total</th>
+                    <th>Bill Date</th>
+                    <th>Status</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bill in bills %}
+                <tr>
+                    <td>{{ bill.id|truncatechars:8 }}</td>
+                    <td>{{ bill.user.username }}</td>
+                    <td>{{ bill.discount }}</td>
+                    <td>{{ bill.total }}</td>
+                    <td>{{ bill.bill_date }}</td>
+                    <td>{{ bill.status|capfirst }}</td>
+                    <td class="flex-row-center">
+                        <div class="function-btn" title="View Bill">
+                            <a href="{% url 'bill' bill.id %}">
+                                <img src="{% static 'icons/view.png' %}" alt="">
+                            </a>
+                        </div>
+                        <div class="function-btn" title="Delete Bill">
+                            <a href="{% url 'delete-bill' bill.id %}">
+                                <img src="{% static 'icons/delete.png' %}" alt="">
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% comment %} Handles List {% endcomment %}
+<div class="content height-80" style="padding-top: 5px;">
+    <div class="heading">
+        <h1>All <span class="primary">Handles</span></h1>
+    </div>
+    
+    <div class="table" style="height: 550px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+
+                    <th>Material</th>
+
+                    <th>Size (mm)</th>
+                    <th>Size (inches)</th>
+
+                    <th>Color</th>
+                    <th>Price Retailer</th>
+                    <th>Price Customer</th>
+                    <th>Minimum Stock</th>
+                    <th>Casting Stock</th>
+                    <th>Stock</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for handle in handles %}
+                <tr>
+                    <td>{{ handle.product.code }}</td>
+                    
+                    <td>{{ handle.product.material|capfirst }}</td>
+                    
+                    <td>{{ handle.size_mm }}</td>
+                    <td>{{ handle.size_inch }}</td>
+                    
+                    {% if handle.color_finish_middle %}
+                        <td class="cart-item-color" title="{{ handle.color_finish_up }} | {{ handle.color_finish_middle }} | {{ handle.color_finish_down }}">
+                            <div class="table-hex-display" style="background-image: linear-gradient(135deg, 
+                                {{ handle.color_finish_up.hex_code }} 33%, 
+                                {{ handle.color_finish_middle.hex_code }} 33% 66%, 
+                                {{ handle.color_finish_down.hex_code }} 66%
+                                ); border-radius: 9px;">
+                            </div>
+                        </td>
+
+                    {% elif handle.color_finish_down %}
+                        <td class="cart-item-color" title="{{ handle.color_finish_up }} | {{ handle.color_finish_down }}">
+                            <div class="table-hex-display" style="background-image: linear-gradient(135deg, {{ handle.color_finish_up.hex_code }} 50%, {{ handle.color_finish_down.hex_code }} 50%); border-radius: 9px;">
+                            </div>
+                        </td>
+
+                    {% else %}
+                        <td class="cart-item-color" title="{{ handle.color_finish_up }}">
+                            <div class="table-hex-display" style="background-color: {{ handle.color_finish_up.hex_code }}; border-radius: 9px;">
+                            </div>
+                        </td>
+                    {% endif %}
+                    
+                    <td>{{ handle.price_retailer }}</td>
+                    <td>{{ handle.price_customer }}</td>
+
+                    <td>{{ handle.minimum_stock }}</td>
+                    <td>{{ handle.casting_stock }}</td>
+                    <td>{{ handle.stock }}</td>
+                    <td class="padding-0">
+                        <div class="function-btn" title="Update Handle">
+                            <a href="{% url 'update-variant' handle.id %}">
+                                <img src="{% static 'icons/view.png' %}" alt="">
+                            </a>
+                        </div>
+                        <div class="function-btn">
+                            <a href="{% url 'delete-handle' handle.id %}">
+                                <img src="{% static 'icons/delete.png' %}" alt="">
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% comment %} JS {% endcomment %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Orders per month -->
+ <script>
+    bar_graph_chart = document.getElementById('bars');
+
+    new Chart(bar_graph_chart, {
+        type: 'bar',
+        data: {
+            labels: [
+                {% for month in graph_data.orders_per_month.labels %}
+                    '{{ month }}',
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Orders',
+                data: [
+                    {% for data in graph_data.orders_per_month.data %}
+                        {{ data }},
+                    {% endfor %}
+                ],
+                borderWidth: 1,
+                backgroundColor: '#13b0ee',
+                barPercentage: 0.3,
+                borderRadius: 10,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            size: 15
+                        },
+                    }
+                }
+            }
+        }
+    });
+ </script>
+
+<!-- Order Stats -->
+<script>
+    const pie_chart = document.getElementById('pie');
+
+    new Chart(pie_chart, {
+        type: 'doughnut',
+        data: {
+            labels: [
+                {% for label in graph_data.order_stats.labels %}
+                    '{{ label }}',
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Orders',
+                data: [
+                    {% for data in graph_data.order_stats.data %}
+                        {{ data }},
+                    {% endfor %}
+                ],
+                borderWidth: 1,
+                backgroundColor: [
+                    '#0D1B2A',
+                    '#415A77',
+                    '#8ddfff',
+                    '#13b0ee',
+                    '#13315C',
+                ],
+            }]
+        },
+        options: {
+            radius: "80%",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            size: 15
+                        },
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+
+<!-- Top 5 Retailer Handles (By Quantity) -->
+<script>
+    top_5_ret_quant = document.getElementById('top_5_ret_quant');
+
+    new Chart(top_5_ret_quant, {
+        type: 'bar',
+        data: {
+            labels: [
+                {% for label in graph_data.top_5_ret_quant.labels %}
+                    '{{ label }}',
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Orders',
+                data: [
+                    {% for data in graph_data.top_5_ret_quant.data %}
+                        {{ data }},
+                    {% endfor %}
+                ],
+                borderWidth: 1,
+                backgroundColor: '#13b0ee',
+                barPercentage: 0.3,
+                borderRadius: 10,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            size: 15
+                        },
+                    }
+                }
+            }
+        }
+    });
+ </script>
+
+<!-- Top 5 Retailer Handles (By Revenue) -->
+ <script>
+    top_5_ret_rev = document.getElementById('top_5_ret_rev');
+
+    new Chart(top_5_ret_rev, {
+        type: 'bar',
+        data: {
+            labels: [
+                {% for label in graph_data.top_5_ret_rev.labels %}
+                    '{{ label }}',
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Orders',
+                data: [
+                    {% for data in graph_data.top_5_ret_rev.data %}
+                        {{ data }},
+                    {% endfor %}
+                ],
+                borderWidth: 1,
+                backgroundColor: '#13b0ee',
+                barPercentage: 0.3,
+                borderRadius: 10,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            size: 15
+                        },
+                    }
+                }
+            }
+        }
+    });
+ </script>
+
+<!-- Retailer Order Stats -->
+<script>
+    const retailer_order_stats = document.getElementById('retailer_order_stats');
+
+    new Chart(retailer_order_stats, {
+        type: 'doughnut',
+        data: {
+            labels: [
+                {% for label in graph_data.retailer_order_stats.labels %}
+                    '{{ label }}',
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Orders',
+                data: [
+                    {% for data in graph_data.order_stats.data %}
+                        {{ data }},
+                    {% endfor %}
+                ],
+                borderWidth: 1,
+                backgroundColor: [
+                    '#1B263B',
+                    '#415A77',
+                    '#8ddfff',
+                    '#13b0ee',
+                    '#13315C',
+                ],
+            }]
+        },
+        options: {
+            radius: "80%",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            size: 15
+                        },
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock content %}

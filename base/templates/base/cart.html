@@ -1,0 +1,127 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block cart %}
+    selected
+{% endblock cart %}
+
+{% block user_cart %}
+    selected
+{% endblock user_cart %}
+
+{% block content %}
+<div class="content" style="padding-bottom: 0;">
+    <div class="heading">
+        <h1 style="margin-bottom: 10px;">Your <span class="primary">Cart</span></h1>
+    </div>
+
+    <div class="cart">
+        <div class="cart-items">
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Code</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Quantity (Boxes)</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr class="cart-item">
+                            <td class="cart-item-image" data-label="Image">
+                                <img src="{{ order.variant.product.image.url }}" alt="{{ order.variant.product.code }}">
+                            </td>
+                            <td class="cart-item-name" data-label="Product Code" data-aria-class="{{ order.variant.id }}">
+                                {{ order.variant.product.code }}
+                            </td>
+                            <td class="cart-item-size" data-label="Size">
+                                {% if order.variant.size_mm %}
+                                    {{ order.variant.size_mm }} mm
+                                {% elif order.variant.size_inch %}
+                                    {{ order.variant.size_inch }} inch
+                                {% endif %}
+                            </td>
+                            <td class="cart-item-color" data-label="Color">
+                                {% if order.variant.color_finish_middle %}
+                                    <div
+                                    class="diagonal-square {% if forloop.first %}active{% endif %}"
+                                    {% comment %} Display all 3 colors {% endcomment %}
+                                    style="background-image: linear-gradient(135deg, 
+                                    {{ order.variant.color_finish_up.hex_code }} 33%, 
+                                    {{ order.variant.color_finish_middle.hex_code }} 33% 66%, 
+                                    {{ order.variant.color_finish_down.hex_code }} 66%
+                                    );"
+                                    title="Finish-Up: {{ order.variant.color_finish_up }} | Finish-Middle: {{ order.variant.color_finish_middle }} | Finish-Down: {{ order.variant.color_finish_down }}"
+                                    aria-label="Color: {{ order.variant.color_finish_up }} and {{ order.variant.color_finish_middle }} and {{ order.variant.color_finish_down }}">
+                                    </div>
+
+                                {% elif order.variant.color_finish_down %}
+                                    <div
+                                    class="diagonal-square {% if forloop.first %}active{% endif %}"
+                                    style="background-image: linear-gradient(135deg, {{ order.variant.color_finish_up.hex_code }} 50%, {{ order.variant.color_finish_down.hex_code }} 50%);"
+                                    title="Finish-Up-Color: {{ order.variant.color_finish_up }} | Finish-Down-Color: {{ order.variant.color_finish_down }}"
+                                    aria-label="Color: {{ order.variant.color_finish_up }} and {{ order.variant.color_finish_down }}">
+                                    </div>
+
+                                {% else %}
+                                    <div
+                                    class="diagonal-square {% if forloop.first %}active{% endif %}"
+                                    style="background-color: {{ order.variant.color_finish_up.hex_code }};"
+                                    title="Finish-Up-Color: {{ order.variant.color_finish_up }}"
+                                    aria-label="Color: {{ order.variant.color_finish_up }}">
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td class="cart-item-quantity" data-label="Quantity">
+                                <button>-</button>
+                                <span>1</span>
+                                <button>+</button>
+                            </td>
+                            <td class="cart-item-total" data-label="Price" sup="{{ order.variant.price_retailer }}">
+                                {% if request.user.user_profile.user_type == 'retailer' %}
+                                    ₹ {{ order.variant.price_retailer }}
+                                {% else %}
+                                    ₹ {{ order.variant.price_customer }}
+                                {% endif %}
+                            </td>
+                            <td class="cart-item-remove" data-label="Actions">
+                                <a href="{% url 'remove-cart-item' order.id %}" title="Remove from cart">
+                                    <img src="{% static 'icons/delete.png' %}" alt="Remove">
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="cart-total">
+            <div class="cart-total-label">Order <span class="primary">Details</span></div>
+            <div class="order-deet">
+                <span>Items</span>
+                <span class="cart-total-items">No. of items</span>
+            </div>
+            <div class="order-deet">
+                <span>Discount</span>
+                <span>₹ 0</span>
+            </div>
+
+            <div class="order-deet border-above">
+                <div class="cart-total-amount-label">Total</div>
+                <div class="cart-total-amount">₹ Will be filled with JS</div>
+            </div>
+
+            <div class="cart-checkout">
+                <button data-place-order-url="{% url 'place-order' %}" data-csrf-token="{{ csrf_token }}">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/cart.js' %}"></script>
+{% endblock content %}

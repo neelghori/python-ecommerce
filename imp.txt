@@ -1,0 +1,28 @@
+- Retailer location using G-Maps.
+- Customer not Buy Now.
+- Customer inquiry.
+
+Retailer buy now:
+- Change color.
+- Size
+- Box (+ve integer) (discount on quantity max 10boxes)
+
+================
+PRODUCT CREATION
+================
+1. Product Code (alphanumeric) 
+E.g. 100X, 200X, ... 900X
+- Material
+- MM or Inch
+
+** No name
+
+2. Sizes (Aluminium: inch | Zinc: mm)
+
+Phase-Change: Color
+
+3. Single, Double, Triple
+4. Finish-up, finish-middle, finish-down
+
+Pair-1: Red - Gold
+Pair-2: Blue - Black

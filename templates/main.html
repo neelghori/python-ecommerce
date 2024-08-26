@@ -1,0 +1,142 @@
+<!doctype html>
+
+{% load static %}
+
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>SIFRA</title>
+
+	{% block header %}
+	{% endblock header %}
+
+	{% comment %} Icon {% endcomment %}
+	<link rel="icon" href="{% static 'icons/navbar/logo/logo.png' %}">
+
+	{% comment %} CSS Stylesheet {% endcomment %}
+	<link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+	{% comment %} Google Fonts {% endcomment %}
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+	<nav>
+		<a href="{% url 'home' %}">
+			<img class="nav-logo" src="{% static 'icons/navbar/logo/logo.png' %}" alt="">
+		</a>
+
+		<ul>
+			{% if request.user.username == 'admin' %}
+				<li
+					class="{% block admin_data %}{% endblock admin_data %}"
+				>
+					<a href="{% url 'admin-data' %}">Admin Data</a>
+				</li>
+
+				<li
+					class="{% block create_variant %}{% endblock create_variant %}"
+				>
+					<a href="{% url 'create-variant' %}">Create Variant</a>
+				</li>
+
+				<li
+					class="{% block colors %}{% endblock colors %}"
+				>
+					<a href="{% url 'colors' %}">Create Color</a>
+				</li>
+
+				<li
+					class="{% block user_register %}{% endblock user_register %}"
+				>
+					<a href="{% url 'user-register' %}">Register User</a>
+				</li>
+
+				{% comment %} <li
+					class="{% block cart %}{% endblock cart %}"
+				>
+					<a href="{% url 'cart' %}">Cart</a>
+				</li> {% endcomment %}
+
+				<li>
+					<a href="{% url 'product-types' %}">Products</a>
+				</li>
+
+				<li
+					class="{% block admin_settings %}{% endblock admin_settings %}"
+				>
+					<a href="{% url 'admin-settings' %}">Settings</a>
+				</li>
+			{% else %}
+				<li
+					class="{% block home_tab %}{% endblock home_tab %}"
+				>
+					<a href="{% url 'home' %}">Home</a>
+				</li>
+				
+				<li
+					class="{% block products %}{% endblock products %}"
+				>
+					<a href="{% url 'product-types' %}">Products</a>
+				</li>
+
+				<li
+					class="{% block user_cart %}{% endblock user_cart %}"
+				>
+					<a href="{% url 'cart' %}">Cart</a>
+				</li>
+
+				<li
+					class="{% block orders %}{% endblock orders %}"
+				>
+					<a href="{% url 'orders' %}">Orders</a>
+				</li>
+			{% endif %}
+		</ul>
+
+		{% if request.user.is_authenticated %}
+			<a href="{% url 'user-signout' %}" class="flex-column-center">
+				<img class="nav-profile" src="{% static 'icons/navbar/profile.png' %}" alt=""
+				{% comment %} If authenticated {% endcomment %}
+				title="Hey {{ request.user.username }}!"
+				>
+			</a>
+		{% else %}
+			<a href="{% url 'user-signin' %}" class="flex-column-center">
+				<img class="nav-profile" src="{% static 'icons/navbar/profile.png' %}" alt=""
+				{% comment %} If authenticated {% endcomment %}
+				title="Sign In"
+				>
+			</a>
+		{% endif %}
+	</nav>
+
+	{% block content %}
+	{% endblock content %}
+
+	<!-- Notifications -->
+	{% if messages %}
+		{% for message in messages %}
+			<div class="notification {{ message.tags }}">
+				{{ message }}
+			</div>
+		{% endfor %}
+	{% endif %}
+</body>
+
+<script>
+	// Notification show and hide
+	const notification = document.querySelector('.notification');
+	if (notification) {
+		setTimeout(() => {
+			notification.style.display = 'none';
+		}, 3000);
+	}
+</script>
+
+</html>

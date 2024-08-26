@@ -1,0 +1,41 @@
+{% extends 'main.html' %}
+
+{% block create_variant %}
+    selected
+{% endblock create_variant %}
+
+{% block content %}
+<div class="content height-75">
+    <div class="heading">
+        <h1>Create <span class="primary">Variant</span></h1>
+    </div>
+    
+    <form method="POST" action="" enctype="multipart/form-data" class="form">
+        {% csrf_token %}
+        
+        <div class="form-fields">
+            {% comment %} Product Code Field {% endcomment %}
+            <div class="form-field">
+                <label for="product_code">Product Code</label>
+                <input type="number" name="product_code" id="product_code" class="form-control" required>
+            </div>
+
+            {% for field in form %}
+                <div class="form-field">
+                    {{ field.label_tag }}
+                    
+                    {{ field }}
+                    
+                    {% if field.errors %}
+                    <div class="text-danger">
+                        {{ field.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn-primary">Create Variant</button>
+    </form>
+</div>
+{% endblock content %}

@@ -1,0 +1,35 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% if request.user.username == 'admin' %}
+    {% block variants %}
+        selected
+    {% endblock variants %}
+{% else %}
+    {% block products %}
+        selected
+    {% endblock products %}
+{% endif %}
+
+{% block content %}
+<div class="content">
+    <div class="heading">
+        <h1>Product <span class="primary">Types</span></h1>
+    </div>
+    <div class="product-type-grid">
+        {% for product_type, product_material, product_image in product_types %}
+            <a href="{% url 'products' product_type %}">
+                <div class="product-type-card">
+                    <img src="{% static 'images/product-types' %}/{{product_image}}" alt="">
+                    
+                    <div class="type-card-header">
+                        <span class="product-name">{{ product_type|capfirst }}</span>
+                        <span class="product-price">{{ product_material|capfirst }}</span>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

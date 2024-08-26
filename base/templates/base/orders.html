@@ -1,0 +1,51 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block orders %}
+    selected
+{% endblock orders %}
+
+{% block content %}
+<div class="content flex-column-center">
+    <!-- Color Table -->
+    <div class="heading">
+        <h1>All <span class="primary">Orders</span></h1>
+    </div>
+
+    {% comment %} Bill Table {% endcomment %}
+    <div class="table" style="height: 550px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Total</th>
+                    <th>Bill Date</th>
+                    <th>Status</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bill in bills %}
+                <tr>
+                    <td>{{ bill.id|truncatechars:8 }}</td>
+                    <td>₹ {{ bill.total }}</td>
+                    <td>{{ bill.bill_date }}</td>
+                    <td>
+                        {% comment %} {{ bill.status|capfirst }} {% endcomment %}
+                        <span class="bill-status {{ bill.status }}">{{ bill.get_status_display }}</span>
+                    </td>
+                    <td class="flex-row-center">
+                        <div class="function-btn" title="View Bill">
+                            <a href="{% url 'user-bill' bill.id %}">
+                                <img src="{% static 'icons/view.png' %}" alt="">
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

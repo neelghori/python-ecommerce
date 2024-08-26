@@ -1,0 +1,416 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<!-- Loading the split function for displaying the first image from the list of image links -->
+
+<div class="container">
+    <h1>Products</h1>
+    <hr>
+
+    <!-- Display Toggle Button -->
+    <div class="container mb-3">
+        <input class="btn-check" checked autocomplete="off" type="checkbox" id="btn-check" data-bs-toggle="collapse" data-bs-target="#cardsDisplay" aria-expanded="true" aria-controls="cardsDisplay"/>
+        <label class="btn btn-outline-primary" for="btn-check">
+            Cards Display
+        </label>
+        
+        <input class="btn-check" autocomplete="off" type="checkbox" id="btn-check-2" data-bs-toggle="collapse" data-bs-target="#tableDisplay"
+        aria-expanded="false" aria-controls="tableDisplay">
+        </input>
+        <label class="btn btn-outline-primary" for="btn-check-2">
+            Table Display
+        </label>
+    </div>
+
+    <!-- Cards -->
+    <div class="row row-cols-1 row-cols-md-4 g-3 show container" id="cardsDisplay">
+        {% for product in products %}
+        <div class="col">
+            <div class="card">
+                <img src="" alt="product_image" class="card-img-top">
+                <div class="card-body">
+                    <h6 class="card-title">{{product.code}}</h6>
+                    <a href="{{product.brand}}" class="btn btn-outline-primary">{{product.platform}} Brand</a>
+                    <p class="card-text">
+                        {{product.description | truncatechars:100}}</p>
+                    <div class="card-footer">
+                        <small class="text-body-secondary fw-semibold fs-4">₹ {{product.sp}}</small>
+                        <small class="text-body-secondary text-decoration-line-through">₹ {{product.mrp}}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Table -->
+    <div class="container table-responsive collapse" id="tableDisplay">
+        <table class="table table-hover table-bordered">
+            <thead class="table-dark">
+                <th>Image</th>
+                <th>Platform</th>
+                <th>Product ID</th>
+                <th>Brand</th>
+                <th>Article Type</th>
+                <th>Name</th>
+                <th>Link</th>
+                <th>Description</th>
+                <th>MRP</th>
+                <th>Selling Price</th>
+                <th>Color</th>
+                <th>Color Variants</th>
+                <th>Sizes</th>
+                <th>Tags</th>
+                <th>Image Links</th>
+                <th>Ratings</th>
+                <th>Material</th>
+                <th>Wash Type</th>
+                <th>Size Chart</th>
+                <th>COD</th>
+                <th>Delivery Charge</th>
+                <th>Easy Return</th>
+                <th>Model Number</th>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        <img src="..." alt="product_image" width="100">
+                    </td>
+                    <td>{{product.platform}}</td>
+                    <td>{{product.product_id}}</td>
+                    <td>{{product.brand}}</td>
+                    <td>{{product.article_type}}</td>
+                    <td>{{product.name}}</td>
+                    <td>{{product.link | truncatechars:30}}</td>
+                    <td>{{product.description | truncatechars:30}}</td>
+                    <td>{{product.mrp}}</td>
+                    <td>{{product.sp}}</td>
+                    <td>{{product.color}}</td>
+                    <td>{{product.color_variants | truncatechars:30}}</td>
+                    <td>{{product.sizes | truncatechars:30}}</td>
+                    <td>{{product.tags}}</td>
+                    <td>{{product.image_links | truncatechars:30}}</td>
+                    <td>{{product.ratings}}</td>
+                    <td>{{product.material | truncatechars:30}}</td>
+                    <td>{{product.wash_type}}</td>
+                    <td>{{product.size_chart | truncatechars:30}}</td>
+                    <td>{{product.cod}}</td>
+                    <td>{{product.delivery_charge}}</td>
+                    <td>{{product.easy_return}}</td>
+                    <td>{{product.model_number}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="chatgpt">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 50px;
+            margin-right: 20px;
+        }
+
+        .header-left input {
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        .header-right span,
+        .header-right a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .profile-icon {
+            width: 40px;
+            border-radius: 50%;
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+        }
+
+        aside {
+            width: 200px;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav li {
+            padding: 10px 0;
+            cursor: pointer;
+        }
+
+        nav .active {
+            font-weight: bold;
+        }
+
+        .filters h3, .filters h4 {
+            margin: 10px 0;
+        }
+
+        .filters ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .filters li {
+            padding: 5px 0;
+        }
+
+        .filters div {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .filters input[type="text"] {
+            width: 45%;
+            padding: 5px;
+        }
+
+        .filters button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+            flex: 1;
+        }
+
+        .product-item {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .product-item img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .product-item h3 {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .product-item p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .product-item .old-price {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .product-item button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        footer {
+            background-color: #f8f8f8;
+            padding: 10px 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pagination button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .pagination .active {
+            background-color: #333;
+            color: #fff;
+            border: none;
+        }
+    </style>
+    <div>
+        <header>
+            <div class="header-left">
+                <img src="logo.png" alt="LapakBaju Logo" class="logo">
+                <input type="text" placeholder="Search among 100+ products">
+            </div>
+            <div class="header-right">
+                <span>ENG</span>
+                <a href="#">Wishlist</a>
+                <a href="#">Your Cart</a>
+                <img src="profile.png" alt="Profile" class="profile-icon">
+            </div>
+        </header>
+        <main>
+            <aside>
+                <nav>
+                    <ul>
+                        <li>T-Shirt</li>
+                        <li class="active">Sweatshirt</li>
+                        <li>Dress</li>
+                        <li>Pants and Skirt</li>
+                        <li>Sweatsuit</li>
+                        <li>Shoes</li>
+                        <li>Stuff and Accessories</li>
+                    </ul>
+                </nav>
+                <div class="filters">
+                    <h3>Filter by:</h3>
+                    <h4>Type</h4>
+                    <ul>
+                        <li><input type="checkbox"> Basic</li>
+                        <li><input type="checkbox"> Pattern</li>
+                        <li><input type="checkbox"> Hoodie</li>
+                        <li><input type="checkbox"> Zipper</li>
+                        <li><input type="checkbox"> Oversize</li>
+                    </ul>
+                    <h4>Colour</h4>
+                    <ul>
+                        <li><input type="checkbox"> Black</li>
+                        <li><input type="checkbox"> Red</li>
+                        <li><input type="checkbox"> Brown</li>
+                        <li><input type="checkbox"> Multicolour</li>
+                        <li><input type="checkbox"> Grey</li>
+                        <li><input type="checkbox"> Blue</li>
+                    </ul>
+                    <h4>Size</h4>
+                    <ul>
+                        <li><input type="checkbox"> S</li>
+                        <li><input type="checkbox"> M</li>
+                        <li><input type="checkbox"> L</li>
+                        <li><input type="checkbox"> XL</li>
+                    </ul>
+                    <h4>Price</h4>
+                    <div>
+                        <input type="text" placeholder="$ min">
+                        <input type="text" placeholder="$ max">
+                    </div>
+                    <button>Apply</button>
+                </div>
+            </aside>
+            <section class="product-grid">
+                <div class="product-item">
+                    <img src="product1.jpg" alt="Line-Pattern Zipper Sweatshirt">
+                    <h3>Line-Pattern Zipper Sweatshirt</h3>
+                    <p>$200</p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-item">
+                    <img src="product2.jpg" alt="Black Fantasy Sweatshirt">
+                    <h3>Black Fantasy Sweatshirt</h3>
+                    <p>$200</p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-item">
+                    <img src="product3.jpg" alt="Brooklyn-NYC Sweatshirt">
+                    <h3>Brooklyn-NYC Sweatshirt</h3>
+                    <p>$200</p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-item">
+                    <img src="product4.jpg" alt="Basic Plain Shirt">
+                    <h3>Basic Plain Shirt</h3>
+                    <p>$200 <span class="old-price">$420</span></p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-item">
+                    <img src="product5.jpg" alt="Basic Orange Sweatshirt">
+                    <h3>Basic Orange Sweatshirt</h3>
+                    <p>$200</p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-item">
+                    <img src="product6.jpg" alt="Alui Sweatshirt X Aivent G">
+                    <h3>Alui Sweatshirt X Aivent G</h3>
+                    <p>$200</p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-item">
+                    <img src="product7.jpg" alt="Flowers Printed Sweatshirt">
+                    <h3>Flowers Printed Sweatshirt</h3>
+                    <p>$200 <span class="old-price">$420</span></p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-item">
+                    <img src="product8.jpg" alt="Relaxed Fit Printed Sweatshirt">
+                    <h3>Relaxed Fit Printed Sweatshirt</h3>
+                    <p>$200</p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-item">
+                    <img src="product9.jpg" alt="Letter Pattern Knitted Vest">
+                    <h3>Letter Pattern Knitted Vest</h3>
+                    <p>$200</p>
+                    <button>Add to Cart</button>
+                </div>
+            </section>
+        </main>
+        <footer>
+            <div class="pagination">
+                <button>Previous</button>
+                <button>1</button>
+                <button>2</button>
+                <button class="active">3</button>
+                <button>4</button>
+                <button>5</button>
+                <button>...</button>
+                <button>20</button>
+                <button>Next</button>
+            </div>
+        </footer>
+    </div>
+</div>
+{% endblock content %}

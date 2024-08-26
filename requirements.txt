@@ -1,0 +1,7 @@
+Brotli
+Django
+dj-database-url
+gunicorn
+pillow
+psycopg2-binary
+whitenoise

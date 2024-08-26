@@ -1,0 +1,31 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="content height-75">
+    <div class="heading">
+        <h1>Create <span class="primary">Profile</span></h1>
+    </div>
+    
+    <form method="POST" action="" enctype="multipart/form-data" class="form card-shadow">
+        {% csrf_token %}
+
+        <div class="form-fields">
+            {% for field in form %}
+                <div class="form-field">
+                    {{ field.label_tag }}
+
+                    {{ field }}
+
+                    {% if field.errors %}
+                        <div class="text-danger">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn-primary">Create Profile</button>
+    </form>
+</div>
+{% endblock content %}

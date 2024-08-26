@@ -1,0 +1,61 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% if request.user.username == 'admin' %}
+    {% block variants %}
+        selected
+    {% endblock variants %}
+{% else %}
+    {% block products %}
+        selected
+    {% endblock products %}
+{% endif %}
+
+{% block content %}
+<div class="content">
+    <div class="heading">
+        <h1>All <span class="primary">{{ ptype }}</span></h1>
+    </div>
+    <div class="product-grid">
+        {% for product in products %}
+            <div class="product-card">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="">
+                {% else %}
+                    <img src="{% static 'images/sifra-wall-complete.png' %}" alt="">
+                {% endif %}
+
+                <div class="card-header">
+                    <span class="product-name">SIFRA-{{ product }}</span>
+                    {% if request.user.user_profile.user_type == 'retailer' %}
+                        <span class="product-price">&#8377; {{ product.price_retailer }}</span>
+                    {% elif request.user.username == 'adfmin' %}
+                        <!-- Crossed out price -->
+                        <div>
+                            <span class="product-price">
+                                &#8377; {{ product.price_retailer }}
+                            </span>
+                            <p class="product-price" 
+                            style="text-decoration: line-through; margin: 0px; font-size: 0.9rem;">
+                                &#8377; {{ product.price_customer }}
+                            </p>
+                        </div>
+                    {% else %}
+                        <span class="product-price">From &#8377; {{ product.price_customer }}</span>
+                    {% endif %}
+                </div>
+
+                <a href="{% url 'handle' product.id %}">
+                    <div class="buy-now">
+                        <img src="{% static 'icons/buy.png' %}" alt="">
+                        <span>
+                            Buy Now
+                        </span>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

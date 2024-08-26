@@ -1,0 +1,195 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content">
+    <div class="bill-header">
+        <h1>Bill Details: <span class="primary">{{ bill.id }}</span></h1>
+        <div class="bill-status-section">
+            <span class="bill-status {{ bill.status }}">{{ bill.get_status_display }}</span>
+            <select id="billStatusSelect" class="status-select">
+                {% for status, display in bill.status_list %}
+                    <option value="{{ status }}" {% if bill.status == status %}selected{% endif %}>{{ display }}</option>
+                {% endfor %}
+            </select>
+            <button id="updateBillStatus" class="update-bill-status" data-bill-id="{{ bill.id }}">
+                Update Status
+            </button>
+        </div>
+    </div>
+
+    <div class="bill-info unit">
+        <div class="info-card">
+            <h3>Customer</h3>
+            <p>{{ bill.user.username }}</p>
+        </div>
+        <div class="info-card">
+            <h3>Bill Date</h3>
+            <p>{{ bill.bill_date|date:"F d, Y H:i" }}</p>
+        </div>
+        <div class="info-card">
+            <h3>Total Amount</h3>
+            <p>₹ {{ bill.total }}</p>
+        </div>
+        <div class="info-card">
+            <h3>Discount</h3>
+            <p>₹ {{ bill.discount }}</p>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="order-list unit">
+        <h2>Orders in this Bill</h2>
+        <div class="table-container">
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product Code</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Quantity</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in bill.order_set.all %}
+                    <tr>
+                        <td>
+                            <img src="{{ order.variant.product.image.url }}" alt="{{ order.variant.product.code }}" class="order-image">
+                        </td>
+                        <td>{{ order.variant.product.code }}</td>
+                        <td>
+                            {% if order.variant.size_mm %}
+                                {{ order.variant.size_mm }} mm
+                            {% elif order.variant.size_inch %}
+                                {{ order.variant.size_inch }} inch
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.variant.color_finish_middle %}
+                                <div class="color-display" title="{{ order.variant.color_finish_up }} | {{ order.variant.color_finish_middle }} | {{ order.variant.color_finish_down }}">
+                                    <div class="color-square" style="background-image: linear-gradient(135deg, 
+                                        {{ order.variant.color_finish_up.hex_code }} 33%, 
+                                        {{ order.variant.color_finish_middle.hex_code }} 33% 66%, 
+                                        {{ order.variant.color_finish_down.hex_code }} 66%
+                                    );"></div>
+                                </div>
+                            {% elif order.variant.color_finish_down %}
+                                <div class="color-display" title="{{ order.variant.color_finish_up }} | {{ order.variant.color_finish_down }}">
+                                    <div class="color-square" style="background-image: linear-gradient(135deg, {{ order.variant.color_finish_up.hex_code }} 50%, {{ order.variant.color_finish_down.hex_code }} 50%);"></div>
+                                </div>
+                            {% else %}
+                                <div class="color-display" title="{{ order.variant.color_finish_up }}">
+                                    <div class="color-square" style="background-color: {{ order.variant.color_finish_up.hex_code }};"></div>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>{{ order.quantity }}</td>
+                        <td>
+                            <span class="status {{ order.status }}">{{ order.get_status_display }}</span>
+                        </td>
+                        <td>
+                            <button class="toggle-order-status" data-order-id="{{ order.id }}" data-current-status="{{ order.status }}">
+                                {% if order.status == 'pending' %}
+                                    Mark Completed
+                                {% else %}
+                                    Mark Pending
+                                {% endif %}
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle order status
+        document.querySelectorAll('.toggle-order-status').forEach(button => {
+            button.addEventListener('click', function() {
+                const orderId = this.dataset.orderId;
+                const currentStatus = this.dataset.currentStatus;
+                const newStatus = currentStatus === 'pending' ? 'completed' : 'pending';
+                
+                // Send request to change status
+                fetch(`{% url 'toggle_order_status' %}?order_id=${orderId}&new_status=${newStatus}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update button and status display
+                        this.textContent = newStatus === 'pending' ? 'Mark Completed' : 'Mark Pending';
+                        this.dataset.currentStatus = newStatus;
+                        const statusSpan = this.closest('tr').querySelector('.status');
+                        statusSpan.className = `status ${newStatus}`;
+                        statusSpan.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                    }
+                });
+            });
+        });
+
+        // Bill status update
+        const updateBillStatusBtn = document.getElementById('updateBillStatus');
+        const billStatusSelect = document.getElementById('billStatusSelect');
+
+        updateBillStatusBtn.addEventListener('click', function() {
+            const billId = this.dataset.billId;
+            const newStatus = billStatusSelect.value;
+            
+            // Send request to change status
+            fetch(`{% url 'update_bill_status' %}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    bill_id: billId,
+                    new_status: newStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update bill status display
+                    const statusSpan = document.querySelector('.bill-status');
+                    statusSpan.className = `bill-status ${newStatus}`;
+                    statusSpan.textContent = billStatusSelect.options[billStatusSelect.selectedIndex].text;
+
+                    showNotification('Bill status updated successfully', 'success');
+                } else {
+                    showNotification('Failed to update bill status', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('An error occurred while updating the status', 'error');
+            });
+        });
+
+        // Show notification function
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
+        }
+    });
+</script>
+{% endblock content %}

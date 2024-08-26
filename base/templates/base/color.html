@@ -1,0 +1,71 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block colors %}
+    selected
+{% endblock colors %}
+
+{% block content %}
+<div class="content flex-column-center">
+    <!-- Color Table -->
+    <div class="heading">
+        <h1>All <span class="primary">Colors</span></h1>
+    </div>
+    <div class="table width-75" style="height: 400px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Color</th>
+                    <th>Hex-code</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for color in colors %}
+                    <tr>
+                        <td>{{ color.name }}</td>
+                        <td class="padding-0">
+                            <div class="table-hex-display" style="background-color: {{ color.hex_code }};">
+                            </div>
+                        </td>
+                        <td>{{ color.hex_code }}</td>
+                        <td class="padding-0">
+                            <div class="function-btn">
+                                <a href="{% url 'delete-color' color.id %}">
+                                    <img src="{% static 'icons/delete.png' %}" alt="">
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Color Form -->
+    <div class="heading">
+        <h1>Create <span class="primary">Color</span></h1>
+    </div>
+    <div class="width-75">
+        <form action="{% url 'colors' %}" method="POST" class="form">
+            {% csrf_token %}
+            <div class="form-field">
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name">
+            </div>
+            
+            <div class="form-field">
+                <label for="hex_code">Hex-code</label>
+                <input type="color" name="hex_code" id="hex_code">
+                <img class="icon" src="{% static 'icons/color-picker.png' %}" alt="">
+            </div>
+            
+            <button class="btn-primary" type="submit">Create</button>
+        </form>
+    </div>
+</div>
+
+<script src="{% static 'js/color.js' %}"></script>
+{% endblock content %}

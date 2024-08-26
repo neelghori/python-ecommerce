@@ -1,0 +1,308 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block home_tab %}
+    selected
+{% endblock home_tab %}
+
+{% block header %}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{% static 'js/home.js' %}"></script>
+{% endblock header %}
+
+{% block content %}
+<div>
+    <div class="hero-section bg-white">
+        <div class="hero-section-text">
+            <h1>
+                Welcome to
+                
+                <br>
+
+                <span class="primary" style="font-size: 1.2em">
+                    Sifra
+                </span>
+
+                <br>
+                
+                Hardware!
+            </h1>
+            <p class="hero-tagline">
+                Unlocking Elegance,
+                <br>
+                One
+                <span class="primary">
+                    Handle
+                </span>
+                at a Time
+            </p>
+            <div class="flex-row-end">
+                <a class="flex-row-center btn bg-primary white" href="{% url 'product-types' %}">
+                    <img class="icon" src="{% static 'icons/explore.png' %}" alt="">
+                    <span>
+                        Browse Handles
+                    </span>
+                </a>
+                <!-- <a class="btn bg-tertiary white" href="">Contact Us</a> -->
+            </div>
+        </div>
+
+        <div class="hero-image-panel">
+            <img class="hero-image" src="{% static 'product_images/SF-1006.JPG' %}" alt="Hero Image-1">
+            <img class="hero-image" src="{% static 'product_images/SF-1009.JPG' %}" alt="Hero Image-2">
+            <img class="hero-image" src="{% static 'product_images/SF-1012.JPG' %}" alt="Hero Image-3">
+        </div>
+    </div>
+
+    <div class="flex-column-center">
+        <div class="feature-cards-section">
+            <div class="feature-card">
+                <img src="{% static 'icons/quality.png' %}" alt="">
+                <h3>Quality</h3>
+                <!-- <p>Our products are made from the finest materials to ensure durability and longevity.</p> -->
+                <p>Exquisite Precision for Lasting Impressions</p>
+            </div>
+            <div class="feature-card">
+                <img src="{% static 'icons/design.png' %}" alt="">
+                <h3>Design</h3>
+                <!-- <p>Our products are designed to be timeless and elegant, adding a touch of class to your home.</p> -->
+                <p>Handles That Speak Your Style</p>
+            </div>
+            <div class="feature-card">
+                <img src="{% static 'icons/craftsmanship.png' %}" alt="">
+                <h3>Craftsmanship</h3>
+                <!-- <p>Handles meticulously crafted by artisans who understand that every curve matters.</p> -->
+                <p>Artisanal Mastery: Where Handles Become Art</p>
+            </div>
+            <div class="feature-card">
+                <img src="{% static 'icons/variety.png' %}" alt="">
+                <h3>Variety</h3>
+                <!-- <p>From sleek minimalism to ornate extravagance, we offer a diverse range of handles.</p> -->
+                <p>Endless Choices, One Perfect Handle</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-row-center bg-white pd-home">
+        <!-- Image and Caption -->
+        <div class="section-image">
+            <div class="position-relative">
+                <span class="image-tag-vertical">
+                    Where Tradition Meets Technology
+                </span>
+            </div>
+            <img src="{% static 'images/sifra-wall-long.png' %}" alt="">
+        </div>
+
+        <!-- About Us Content -->
+        <div class="section-text">
+            <h1>
+                About <span class="primary">Us</span>
+            </h1>
+            <p>
+                At <span class="primary">Sifra</span>, we’re more than door handles; we’re storytellers. Our journey
+                began with a vision to create door handles that are more than just hardware; they’re a reflection of
+                your style, your story, and your legacy. We believe that every handle should be a work of art, a
+                masterpiece that tells a story of elegance and sophistication.
+                <br>
+                <br>
+                Our artisans, with their seasoned hands and unwavering dedication, breathe life into each piece. <span
+                    class="primary">Sifra</span> isn’t just a brand; it’s a testament to the timeless artistry that
+                flows through our veins.
+            </p>
+
+            <div class="dual-section flex-row-center margin-top-50">
+                <div class="section">
+                    <div class="section-title flex-row-start">
+                        <img class="icon" src="{% static 'icons/about-us-1.png' %}" alt="">
+                        <span>
+                            Our Mission
+                        </span>
+                    </div>
+                    <p>
+                        To craft door handles that are more than just hardware; they're a reflection of your style, your
+                        story, and your legacy.
+                    </p>
+                </div>
+
+                <!-- Vertical line -->
+                <div class="vertical-line"></div>
+
+                <div class="section">
+                    <div class="section-title flex-row-start">
+                        <img class="icon" src="{% static 'icons/vision.png' %}" alt="">
+                        <span>
+                            Our Vision
+                        </span>
+                    </div>
+                    <p>
+                        To be the go-to destination for discerning homeowners who seek to elevate their living spaces
+                        with exquisite door handles.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics and Graph Section -->
+    <div class="metrics-section bg-gradient">
+        <div class="section-text width-100 text-center">
+            <h1 class="section-title">
+                Our <span class="highlight">Impact</span> in Numbers
+            </h1>
+        </div>
+        <div class="metrics-container">
+            <div class="metric-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="icon-container">
+                    <i class="fas fa-smile"></i>
+                </div>
+                <h3>Happy Customers</h3>
+                <p id="customerCount" class="metric-number">0</p>
+            </div>
+            <div class="metric-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="icon-container">
+                    <i class="fas fa-door-open"></i>
+                </div>
+                <h3>Handles Sold</h3>
+                <p id="handlesSold" class="metric-number">0</p>
+            </div>
+            <div class="metric-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="icon-container">
+                    <i class="fas fa-award"></i>
+                </div>
+                <h3>Years of Excellence</h3>
+                <p id="yearsCount" class="metric-number">0</p>
+            </div>
+        </div>
+        <div class="graph-container" data-aos="fade-up" data-aos-delay="400">
+            <canvas id="salesGraph"></canvas>
+        </div>
+    </div>
+
+    <div class="flex-column-center pd-home">
+        <!-- Font import -->
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&display=swap');
+        </style>
+
+        <div class="section-text width-100 text-center">
+            <h1 class="margin-0">
+                <span class="primary">Happy-Client</span> Stories
+            </h1>
+            Few of out of many client families who have shared their experience with us. 
+        </div>
+        
+        <div class="innerdiv">
+            <!-- div1 -->
+            <div class="div1 eachdiv">
+                <div class="userdetails">
+                    <div class="imgbox">
+                        <img src="https://raw.githubusercontent.com/RahulSahOfficial/testimonials_grid_section/5532c958b7d3c9b910a216b198fdd21c73112d84/images/image-daniel.jpg"
+                            alt="">
+                    </div>
+                    <div class="detbox">
+                        <p class="name">Divyajeet Pala</p>
+                        <p class="designation">Verified Customer</p>
+                    </div>
+                </div>
+                <div class="review">
+                    <h4>
+                        Sifra's door handles are a perfect blend of style and durability.
+                    </h4>
+                    <p>
+                        “I've been in the construction business for many years and have seen a lot of door handles. But Sifra's door handles stand out in terms of quality and design. Their timely delivery and excellent customer service are just the icing on the cake.
+
+                        What's more, Sifra's commitment to sustainability is commendable. Their manufacturing processes are environmentally friendly, and their products are built to last, reducing the need for replacement. I can confidently say that Sifra's door handles are worth every penny.”
+                    </p>
+                </div>
+            </div>
+            <!-- div2 -->
+            <div class="div2 eachdiv">
+                <div class="userdetails">
+                    <div class="imgbox">
+                        <img src="https://raw.githubusercontent.com/RahulSahOfficial/testimonials_grid_section/5532c958b7d3c9b910a216b198fdd21c73112d84/images/image-jonathan.jpg"
+                            alt="">
+                    </div>
+                    <div class="detbox">
+                        <p class="name">Harshvardhan Pande</p>
+                        <p class="designation">Verified Customer</p>
+                    </div>
+                </div>
+                <div class="review">
+                    <h4>Sifra's team was very supportive</h4>
+                    <p>“ I was a bit skeptical about ordering door handles. But Sifra's team made the process so easy. This was one of the best investments I’ve made in my home renovation project. ”</p>
+                </div>
+            </div>
+            <!-- div3 -->
+            <div class="div3 eachdiv">
+                <div class="userdetails">
+                    <div class="imgbox">
+                        <img src="https://raw.githubusercontent.com/RahulSahOfficial/testimonials_grid_section/5532c958b7d3c9b910a216b198fdd21c73112d84/images/image-kira.jpg"
+                            alt="">
+                    </div>
+                    <div class="detbox">
+                        <p class="name dark">Dhruvi Sabalpara</p>
+                        <p class="designation dark">Verified Customer</p>
+                    </div>
+                </div>
+                <div class="review dark">
+                    <h4>Such a life-changing experience. Highly recommended!</h4>
+                    <p>
+                        “Before discovering Sifra, I had a hard time finding door handles that matched my home’s
+                        aesthetic. Sifra’s wide range of designs and finishes made it easy for me to find the perfect
+                        match. The quality of their products is top-notch, and their customer service is outstanding.
+
+                        <br>
+                        <br>
+
+                        In addition to their product quality and customer service, what truly sets Sifra apart is their commitment to innovation. This commitment to staying ahead of the curve is just another reason why I highly recommend Sifra to anyone in need of high-quality door
+                        handles.”
+                    </p>
+                </div>
+            </div>
+            <!-- div4 -->
+            <div class="div4 eachdiv">
+                <div class="userdetails">
+                    <div class="imgbox">
+                        <img src="https://raw.githubusercontent.com/RahulSahOfficial/testimonials_grid_section/5532c958b7d3c9b910a216b198fdd21c73112d84/images/image-jeanette.jpg"
+                            alt="">
+                    </div>
+                    <div class="detbox">
+                        <p class="name dark">Ivanshi Zalavadiya</p>
+                        <p class="designation dark">Verified Customer</p>
+                    </div>
+                </div>
+                <div class="review dark">
+                    <h4>An overall wonderful and rewarding experience</h4>
+                    <p>“ Thank you, Sifra, for the wonderful experience! Your door handles have added a touch of elegance to my home. I now enjoy receiving compliments on your beautiful door handles.”</p>
+                </div>
+            </div>
+            <!-- div5 -->
+            <div class="div5 eachdiv">
+                <div class="userdetails">
+                    <div class="imgbox">
+                        <img src="https://raw.githubusercontent.com/RahulSahOfficial/testimonials_grid_section/5532c958b7d3c9b910a216b198fdd21c73112d84/images/image-patrick.jpg"
+                            alt="">
+                    </div>
+                    <div class="detbox">
+                        <p class="name">Shyam Kansara</p>
+                        <p class="designation">Verified Customer</p>
+                    </div>
+                </div>
+                <div class="review">
+                    <h4>Awesome product range and excellent customer service from Sifra</h4>
+                    <p>“ Sifra's team seems genuinely concerned about customer satisfaction, which I find really
+                        refreshing. Their wide range of door handles gave me the freedom to choose the perfect ones for
+                        my home. The quality is above the rest. You will get the personal attention you need from an
+                        incredible team of professionals. ”</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,17 @@
+{% extends "main.html" %}
+
+{% block content %}
+<div class="content flex-column-start height-75">
+    <div class="heading">
+        <h1>Delete <span class="primary">{{ delete_object_type }}</span></h1>
+    </div>
+    <div class="width-75">
+        <form action="" method="POST" class="form">
+            {% csrf_token %}
+            <h2>Are you sure you want to delete <span class="primary">{{ delete_object_value }}</span> {{ delete_object_type }}?</h2>
+
+            <button class="btn-primary" type="submit">Delete</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

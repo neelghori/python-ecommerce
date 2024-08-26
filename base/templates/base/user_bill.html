@@ -1,0 +1,89 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content">
+    <div class="bill-header">
+        <h1>Order ID: <span class="primary">{{ bill.id }}</span></h1>
+        <div class="bill-status-section">
+            <span>Status: </span>
+            <span style="margin-left: 10px;" class="bill-status {{ bill.status }}">{{ bill.get_status_display }}</span>
+        </div>
+    </div>
+
+    <div class="bill-info unit">
+        <div class="info-card">
+            <h3>Order Date</h3>
+            <p>{{ bill.bill_date|date:"F d, Y H:i" }}</p>
+        </div>
+        <div class="info-card">
+            <h3>Total Amount</h3>
+            <p>₹ {{ bill.total }}</p>
+        </div>
+        <div class="info-card">
+            <h3>Discount</h3>
+            <p>₹ {{ bill.discount }}</p>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="order-list unit">
+        <h2>Items Ordered</h2>
+        <div class="table-container">
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product Code</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Quantity</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in bill.order_set.all %}
+                    <tr>
+                        <td>
+                            <img src="{{ order.variant.product.image.url }}" alt="{{ order.variant.product.code }}" class="order-image">
+                        </td>
+                        <td>{{ order.variant.product.code }}</td>
+                        <td>
+                            {% if order.variant.size_mm %}
+                                {{ order.variant.size_mm }} mm
+                            {% elif order.variant.size_inch %}
+                                {{ order.variant.size_inch }} inch
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.variant.color_finish_middle %}
+                                <div class="color-display" title="{{ order.variant.color_finish_up }} | {{ order.variant.color_finish_middle }} | {{ order.variant.color_finish_down }}">
+                                    <div class="color-square" style="background-image: linear-gradient(135deg, 
+                                        {{ order.variant.color_finish_up.hex_code }} 33%, 
+                                        {{ order.variant.color_finish_middle.hex_code }} 33% 66%, 
+                                        {{ order.variant.color_finish_down.hex_code }} 66%
+                                    );"></div>
+                                </div>
+                            {% elif order.variant.color_finish_down %}
+                                <div class="color-display" title="{{ order.variant.color_finish_up }} | {{ order.variant.color_finish_down }}">
+                                    <div class="color-square" style="background-image: linear-gradient(135deg, {{ order.variant.color_finish_up.hex_code }} 50%, {{ order.variant.color_finish_down.hex_code }} 50%);"></div>
+                                </div>
+                            {% else %}
+                                <div class="color-display" title="{{ order.variant.color_finish_up }}">
+                                    <div class="color-square" style="background-color: {{ order.variant.color_finish_up.hex_code }};"></div>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>{{ order.quantity }}</td>
+                        <td>
+                            <span class="status {{ order.status }}">{{ order.get_status_display }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

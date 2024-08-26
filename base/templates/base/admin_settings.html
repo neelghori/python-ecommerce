@@ -1,0 +1,63 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block admin_settings %}
+    selected
+{% endblock admin_settings %}
+
+{% block content %}
+<div class="content flex-column-center">
+    <!-- Settings Table -->
+    <div class="heading">
+        <h1>All <span class="primary">Settings</span></h1>
+    </div>
+    <div class="table width-75" style="height: 400px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Setting Name</th>
+                    <th>Setting Value</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for setting in settings %}
+                    <tr>
+                        <td>{{ setting.name }}</td>
+                        <td>{{ setting.value }}</td>
+                        <td class="padding-0">
+                            <div class="function-btn">
+                                <a>
+                                    <img src="{% static 'icons/delete.png' %}" alt="">
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Settings Form -->
+    <div class="heading">
+        <h1>Create <span class="primary">Setting</span></h1>
+    </div>
+    <div class="width-75">
+        <form action="" method="POST" class="form">
+            {% csrf_token %}
+            <div class="form-field">
+                <label for="name">Setting Name</label>
+                <input type="text" name="name" id="name">
+            </div>
+            
+            <div class="form-field">
+                <label for="setting_value">Setting Value</label>
+                <input type="text" name="setting_value" id="setting_value">
+            </div>
+            
+            <button class="btn-primary" type="submit">Create</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

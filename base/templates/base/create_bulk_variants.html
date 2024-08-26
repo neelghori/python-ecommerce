@@ -1,0 +1,191 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+<style>
+    .image-container {
+        position: relative;
+        width: 100%;
+        max-width: 845px;
+        margin-top: 25px;
+    }
+
+    .image-container img {
+        width: 100%;
+        border-radius: 15px;
+        cursor: pointer;
+    }
+
+    .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.8);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+        border-radius: 15px;
+        cursor: pointer;
+    }
+
+    .image-container:hover .image-overlay {
+        opacity: 1;
+    }
+</style>
+
+<form id="product-form" method="POST" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    <main class="container">
+        <div class="flex-column-center" style="max-width: 600px; margin-right: 50px;">
+            <div class="image-container">
+                <img id="product-image-preview" src="{% static 'images/sifra-wall-complete.png' %}" alt="Product Image Preview" class="active">
+                <div class="image-overlay">
+                    Click to change image.
+                    <br>
+                    This image will be used as the image for all variants.
+                </div>
+            </div>
+            <input type="file" id="product-image" name="product-image" accept="image/*" style="display: none;">
+        </div>
+
+        <!-- Right Column -->
+        <div class="right-column" style="width: 800px">
+            <!-- Product Description -->
+            <div class="product-description">
+                <span>New Product</span>
+            </div>
+
+            <!-- Product Configuration -->
+            <div class="product-configuration">
+                <!-- Code Series -->
+                <div class="form-field">
+                    <label class="bg-dark" style="width: 250px">Product Code</label>
+                    <input type="number" name="code-initials" id="code-initials">
+                </div>
+
+                <!-- Size Configuration -->
+                <div class="size-config">
+                    <span>Sizes</span>
+                    <div class="size-choose margin-top-5" id="size-mm">
+                        {% for size in sizes_mm %}
+                            <label class="size-checkbox">
+                                <input type="checkbox" name="sizes_mm" value="{{ size }}" {% if forloop.first %}checked{% endif %}>
+                                <span class="checkmark">{{ size }} mm</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+
+                    <div class="size-choose margin-top-5" id="size-inch" style="display:none;">
+                        {% for size in sizes_inch %}
+                            <label class="size-checkbox">
+                                <input type="checkbox" name="sizes_inches" value="{{ size }}" {% if forloop.first %}checked{% endif %}>
+                                <span class="checkmark">{{ size }} inches</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Color Configuration -->
+                <div class="color-config">
+                    <span>Colors</span>
+                    <div id="color-rows" class="color-rows-container">
+                        <div class="margin-top-5">
+                            <span class="primary" style="margin-left: 30px; margin-right: 30px; font-weight: bold;">Finish-Up</span>
+                            <span class="primary" style="margin-right: 30px; font-weight: bold;">Finish-Middle</span>
+                            <span class="primary" style="font-weight: bold;">Finish-Down</span>
+                        </div>
+                        <div class="color-row margin-top-5">
+                            <span class="color-row-index">1</span>
+                            <select name="color1[]" required>
+                                {% for color in colors %}
+                                    <option value="{{ color.id }}">{{ color }}</option>
+                                {% endfor %}
+                            </select>
+                            <select name="color2[]">
+                                <option value="none">Select Color</option>
+                                {% for color in colors %}
+                                    <option value="{{ color.id }}">{{ color }}</option>
+                                {% endfor %}
+                            </select>
+                            <select name="color3[]">
+                                <option value="none">Select Color</option>
+                                {% for color in colors %}
+                                    <option value="{{ color.id }}">{{ color }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" id="add-color-row" class="add-color-row-btn margin-top-5" aria-label="Add Color Row" title="Add colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="product-submit">
+                <button type="submit" class="cart-btn">Create Products</button>
+            </div>
+        </div>
+    </main>
+</form>
+
+<script>
+    const productImageInput = document.getElementById('product-image');
+    const productImagePreview = document.getElementById('product-image-preview');
+    const imageContainer = document.querySelector('.image-container');
+    const addColorRowBtn = document.getElementById('add-color-row');
+    const colorRows = document.getElementById('color-rows');
+    const productForm = document.getElementById('product-form');
+    const codeInitials = document.getElementById('code-initials');
+    const sizeMm = document.getElementById('size-mm');
+    const sizeInch = document.getElementById('size-inch');
+
+
+    // Image preview and click to change
+    imageContainer.addEventListener('click', function() {
+        productImageInput.click();
+    });
+
+    productImageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                productImagePreview.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Add color row
+    addColorRowBtn.addEventListener('click', function() {
+        const newRow = colorRows.children[1].cloneNode(true);
+        const newIndex = parseInt(colorRows.lastElementChild.querySelector('.color-row-index').textContent) + 1;
+        newRow.querySelector('.color-row-index').textContent = newIndex;
+        newRow.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+        colorRows.appendChild(newRow);
+    });
+
+    // Change size options based on code selection
+    codeInitials.addEventListener('change', function() {
+        // Get first 2 digits of the code
+        const selectedCode = parseInt(codeInitials.value.toString().slice(0, 2));
+        if (selectedCode > 55) {
+            sizeMm.style.display = 'none';
+            sizeInch.style.display = 'block';
+        } else {
+            sizeMm.style.display = 'block';
+            sizeInch.style.display = 'none';
+        }
+    });
+</script>
+{% endblock content %}

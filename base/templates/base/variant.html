@@ -1,0 +1,206 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+<main class="container">
+
+    <!-- Left Column -->
+    <div class="left-column">
+        {% for variant in variants %}
+            {% if variant.product.image %}
+                <img
+                class="{% if forloop.first %}active{% endif %}"
+                src="{{ variant.product.image.url }}"
+                data-label-id="{{ variant.id }}"
+                alt="Variant Image"
+                loading="lazy">
+            {% else %}
+                <img
+                class="{% if forloop.first %}active{% endif %}"
+                src="{% static 'images/sifra-wall.png' %}"
+                data-label-id="{{ variant.id }}"
+                alt="Variant Image"
+                loading="lazy">
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-column">
+
+        <!-- Product Description -->
+        <div class="product-description">
+            <span>Handle</span>
+            <h1>{{ product.code }}</h1>
+        </div>
+
+        <!-- Product Configuration -->
+        <div class="product-configuration">
+
+            <!-- Product Color -->
+            <div class="product-color">
+                <span>Color Options</span>
+
+                <div class="color-choose margin-top-5">
+                    {% for variant in variants %}
+                        {% if variant.color_finish_middle %}
+                            <div
+                            class="diagonal-square {% if forloop.first %}active{% endif %}"
+                            {% comment %} Display all 3 colors {% endcomment %}
+                            style="background-image: linear-gradient(135deg, 
+                            {{ variant.color_finish_up.hex_code }} 33%, 
+                            {{ variant.color_finish_middle.hex_code }} 33% 66%, 
+                            {{ variant.color_finish_down.hex_code }} 66%
+                            );"
+                            title="Finish-Up: {{ variant.color_finish_up }} | Finish-Middle: {{ variant.color_finish_middle }} | Finish-Down: {{ variant.color_finish_down }}"
+                            aria-label="Color: {{ variant.color_finish_up }} and {{ variant.color_finish_middle }} and {{ variant.color_finish_down }}">
+                            </div>
+
+                        {% elif variant.color_finish_down %}
+                            <div
+                            class="diagonal-square {% if forloop.first %}active{% endif %}"
+                            style="background-image: linear-gradient(135deg, {{ variant.color_finish_up.hex_code }} 50%, {{ variant.color_finish_down.hex_code }} 50%);"
+                            title="Finish-Up-Color: {{ variant.color_finish_up }} | Finish-Down-Color: {{ variant.color_finish_down }}"
+                            aria-label="Color: {{ variant.color_finish_up }} and {{ variant.color_finish_down }}">
+                            </div>
+
+                        {% else %}
+                            <div
+                            class="diagonal-square {% if forloop.first %}active{% endif %}"
+                            style="background-color: {{ variant.color_finish_up.hex_code }};"
+                            title="Finish-Up-Color: {{ variant.color_finish_up }}"
+                            aria-label="Color: {{ variant.color_finish_up }}">
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Size Configuration -->
+            <div class="size-config">
+                <span>Sizes</span>
+
+                <div class="size-choose margin-top-5">
+                    {% for size in sizes %}
+                        <button class="{% if forloop.first %}active{% endif %}">{{ size }} mm</button>
+                    {% endfor %}
+                </div>
+
+                <a href="#">How to measure the handle</a>
+            </div>
+        </div>
+
+        <!-- Product Pricing -->
+        <div class="product-price">
+            {% if request.user.user_profile.user_type == 'customer' %}
+                <span>&#8377; {{ variants.0.price_customer }}</span>
+            {% elif request.user.user_profile.user_type == 'retailer' %}
+                <span>&#8377; {{ variants.0.price_retailer }}</span>
+                <button id="cart-btn" class="cart-btn" data-label-id="{{ variants.0.id }}">Add to Cart</button>
+            {% endif %}
+        </div>
+    </div>
+</main>
+
+<script>
+    const productColors = document.querySelectorAll(".diagonal-square");
+    const productImages = document.querySelectorAll(".left-column img");
+    const sizeChoose = document.querySelector(".size-choose");
+    const cartBtn = document.querySelector("#cart-btn");
+    const productPrice = document.querySelector(".product-price span");
+
+    function updateSizes(sizes) {
+        sizeChoose.innerHTML = "";
+        sizes.forEach(size => {
+            const button = document.createElement("button");
+            button.textContent = `${size} mm`;
+            button.addEventListener("click", handleSizeClick);
+            sizeChoose.appendChild(button);
+        });
+    }
+
+    function handleSizeClick(event) {
+        const clickedButton = event.target;
+        const allSizeButtons = document.querySelectorAll(".size-choose button");
+        
+        // Remove active class from all buttons
+        allSizeButtons.forEach(btn => btn.classList.remove("active"));
+        
+        // Add active class to the clicked button
+        clickedButton.classList.add("active");
+
+        fetchPrice(
+            document.querySelector(".left-column img.active").getAttribute("data-label-id"),
+            clickedButton.textContent.split(" ")[0]
+        );
+    }
+
+    function fetchPrice(variantId, size = null) {
+        fetch("{% url 'get-price' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: JSON.stringify({ var_id: variantId, size: size })
+        })
+        .then(response => response.json())
+        .then(data => {
+            updateSizes(data.sizes);
+            productPrice.textContent = `₹ ${data.price}`;
+            cartBtn.setAttribute("data-label-id", data.var_id);
+            
+            // If a size was selected, reactivate the corresponding button
+            if (size) {
+                const sizeButtons = document.querySelectorAll(".size-choose button");
+                const selectedButton = Array.from(sizeButtons).find(btn => btn.textContent === `${size} mm`);
+                if (selectedButton) {
+                    selectedButton.classList.add("active");
+                }
+            }
+        });
+    }
+
+    function updateActiveClass(elements, activeIndex) {
+        elements.forEach((el, index) => {
+            el.classList.toggle("active", index === activeIndex);
+        });
+    }
+
+    productColors.forEach((color, index) => {
+        color.addEventListener("click", () => {
+            updateActiveClass(productImages, index);
+            updateActiveClass(productColors, index);
+            fetchPrice(productImages[index].getAttribute("data-label-id"));
+        });
+    });
+
+    cartBtn.addEventListener("click", () => {
+        fetch("{% url 'add-to-cart' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: JSON.stringify({ var_id: cartBtn.getAttribute("data-label-id") })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const span = document.createElement("span");
+            span.textContent = data.status === "success" ? "Added!" : "Already in Cart!";
+            span.classList.add("primary");
+            span.style.fontSize = "21px";
+            cartBtn.replaceWith(span);
+            setTimeout(() => {
+                span.replaceWith(cartBtn);
+            }, 1500);
+        });
+    });
+
+    {% comment %} Add eventlistener to size buttons {% endcomment %}
+    sizeChoose.querySelectorAll("button").forEach(button => {
+        button.addEventListener("click", handleSizeClick);
+    });
+</script>
+{% endblock content %}
