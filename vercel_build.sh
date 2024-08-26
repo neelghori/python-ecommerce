@@ -18,5 +18,3 @@ pip install -r requirements.txt
 
 # collect static files using the Python interpreter from venv
 python manage.py collectstatic --noinput
-
-echo "BUILD END"
