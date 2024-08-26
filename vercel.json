@@ -1,21 +1,8 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "manage.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb" },
-      "buildCommand": "./vercel_build.sh"
-    }
-  ],
   "routes": [
     {
-      "src": "/static/(.*)",
-      "dest": "/staticfiles/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "manage.py"
+      "dest": "sifra/wsgi.py"
     }
   ]
 }
